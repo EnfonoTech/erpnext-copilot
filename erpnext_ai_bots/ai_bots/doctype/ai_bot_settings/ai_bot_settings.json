@@ -94,9 +94,11 @@
   },
   {
    "default": "claude-sonnet-5-5",
+   "description": "Anthropic model used by the chat. OpenAI (ChatGPT OAuth) ignores this and uses its own codex model.",
    "fieldname": "model_name",
-   "fieldtype": "Data",
-   "label": "Model"
+   "fieldtype": "Select",
+   "label": "Model",
+   "options": "claude-sonnet-5-5\nclaude-opus-5-5\nclaude-fable-5-1\nclaude-haiku-5-5"
   },
   {
    "description": "ElevenLabs API key for text-to-speech. Leave blank to disable TTS.",
