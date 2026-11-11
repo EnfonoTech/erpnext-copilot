@@ -434,7 +434,7 @@ class Orchestrator:
             api_messages = self._prepare_messages_for_api()
 
             with client.messages.stream(
-                model=self.settings.model_name or "claude-sonnet-4-20250514",
+                model=self.settings.model_name or "claude-sonnet-5-5",
                 max_tokens=self.settings.max_tokens_per_request or 4096,
                 system=get_system_prompt(self.user, self.company),
                 tools=self.tool_registry.get_all_schemas(),
@@ -522,7 +522,7 @@ class Orchestrator:
                 frappe.local.message_log = []
 
             self.turn_tool_calls += 1
-            tool_name = block.name
+            tool_name = self.tool_registry.from_api_name(block.name)
             tool_input = block.input
             tool_id = block.id
             start_time = time.time()

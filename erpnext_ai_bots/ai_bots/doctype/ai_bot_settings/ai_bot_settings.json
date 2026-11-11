@@ -93,7 +93,7 @@
    "label": "API Key"
   },
   {
-   "default": "claude-sonnet-4-20250514",
+   "default": "claude-sonnet-5-5",
    "fieldname": "model_name",
    "fieldtype": "Data",
    "label": "Model"

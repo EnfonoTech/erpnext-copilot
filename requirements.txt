@@ -1,4 +1,4 @@
-anthropic>=0.40.0
+anthropic>=0.40.0,<1  # 2.x pulls httpx2, which breaks on Brotli<1.2 (TypeError in response decoding)
 PyJWT>=2.8.0
 cryptography>=41.0.0
 pymysql>=1.1.0

@@ -34,7 +34,7 @@ class SubagentSpawner:
 
         settings = frappe.get_cached_doc("AI Bot Settings")
         self.client = anthropic.Anthropic(api_key=settings.get_password("api_key"))
-        self.model = settings.model_name or "claude-sonnet-4-20250514"
+        self.model = settings.model_name or "claude-sonnet-5-5"
         self.tool_registry = ToolRegistry(user=self.user, company=self.company)
 
     def run(self, task_description: str, tools_needed: list,
@@ -47,7 +47,7 @@ class SubagentSpawner:
             }
 
         tools = self.tool_registry.resolve_tool_subset(tools_needed)
-        tool_schemas = [t.schema() for t in tools]
+        tool_schemas = [{**t.schema(), "name": self.tool_registry.to_api_name(t.schema()["name"])} for t in tools]
 
         messages = [{
             "role": "user",
@@ -102,7 +102,7 @@ class SubagentSpawner:
                 if block.type != "tool_use":
                     continue
 
-                tool = self.tool_registry.get_tool(block.name)
+                tool = self.tool_registry.get_tool(self.tool_registry.from_api_name(block.name))
                 try:
                     result = tool.execute(**block.input)
                     steps.append({"tool": block.name, "status": "success"})

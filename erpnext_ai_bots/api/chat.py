@@ -280,7 +280,14 @@ def delete_session(session_id: str):
     for log_name in audit_logs:
         frappe.delete_doc("AI Audit Log", log_name, ignore_permissions=True, force=True)
 
-    frappe.delete_doc("AI Chat Session", session_id, ignore_permissions=True, force=True)
+    try:
+        frappe.delete_doc("AI Chat Session", session_id, ignore_permissions=True, force=True)
+    except frappe.QueryTimeoutError:
+        # A parallel/duplicate delete request holds the row lock. If the session is
+        # already gone the goal is met; otherwise surface the original error.
+        frappe.db.rollback()
+        if frappe.db.exists("AI Chat Session", session_id):
+            raise
     frappe.db.commit()
     return {"status": "deleted"}
 
@@ -364,7 +371,7 @@ def export_session_html(session_id: str):
 
     title = frappe.utils.escape_html(session.title or session_id)
     date = frappe.utils.formatdate(
-        (session.last_message_at or session.creation or "").split(" ")[0]
+        str(session.last_message_at or session.creation or "").split(" ")[0]
     )
     visible = [m for m in messages if m.get("role") in ("user", "assistant")]
     count = len(visible)

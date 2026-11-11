@@ -111,6 +111,16 @@ class ToolRegistry:
 
         return self._cache[namespaced_name]
 
+    @staticmethod
+    def to_api_name(namespaced_name: str) -> str:
+        """core.raw_sql -> core__raw_sql (Anthropic-safe)."""
+        return namespaced_name.replace(".", "__")
+
+    @staticmethod
+    def from_api_name(api_name: str) -> str:
+        """core__raw_sql -> core.raw_sql."""
+        return api_name.replace("__", ".", 1)
+
     def get_all_schemas(self) -> list:
         """Return tool schemas for ALL registered tools (Anthropic format).
         Skips tools that fail to import so one broken tool doesn't crash everything.
@@ -119,7 +129,9 @@ class ToolRegistry:
         for namespaced_name in TOOL_MAP:
             try:
                 tool = self.get_tool(namespaced_name)
-                schemas.append(tool.schema())
+                schema = tool.schema()
+                # Anthropic API: tool names must match ^[a-zA-Z0-9_-]{1,128}$ (no dots)
+                schemas.append({**schema, "name": self.to_api_name(schema["name"])})
             except Exception as e:
                 import frappe
                 frappe.log_error(

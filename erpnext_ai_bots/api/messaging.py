@@ -517,7 +517,7 @@ def _try_lightweight_ai(question, user, company, ai_name):
                 return None
             client = anthropic.Anthropic(api_key=api_key)
             response = client.messages.create(
-                model=settings.model_name or "claude-sonnet-4-20250514",
+                model=settings.model_name or "claude-sonnet-5-5",
                 max_tokens=512,
                 system=system_msg,
                 messages=[{"role": "user", "content": question}],
