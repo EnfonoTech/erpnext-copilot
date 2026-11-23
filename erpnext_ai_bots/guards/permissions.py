@@ -15,6 +15,7 @@ TOOL_PERMISSION_MAP = {
     "core.send_report_email": (None, None),
     "core.analyze_image": (None, None),
     "core.read_file": (None, None),
+    "core.import_rows": ("create", None),
 
     "accounting.get_trial_balance": ("read", "Account"),
     "accounting.get_outstanding_invoices": ("read", "Sales Invoice"),
