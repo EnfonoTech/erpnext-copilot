@@ -7,6 +7,23 @@ from erpnext_ai_bots.guards.rate_limiter import RateLimiter
 
 
 @frappe.whitelist()
+def get_ui_config():
+    """Widget settings that every desk user may read.
+
+    The widget used to call frappe.client.get_value on AI Bot Settings, which only
+    System Manager / AI Bot Manager can read, so every other user got a
+    "No permission for AI Bot Settings" modal on every page load. Settings are read
+    here with the cached doc instead and only the harmless fields are returned.
+    The ElevenLabs API key is deliberately NOT sent to the browser.
+    """
+    settings = frappe.get_cached_doc("AI Bot Settings")
+    return {
+        "accent_color": settings.accent_color or "",
+        "elevenlabs_voice_id": settings.elevenlabs_voice_id or "",
+    }
+
+
+@frappe.whitelist()
 def upload_file(session_id: str = None):
     """Upload a file and return its URL. Optionally attach to a session."""
     if not frappe.request.files:

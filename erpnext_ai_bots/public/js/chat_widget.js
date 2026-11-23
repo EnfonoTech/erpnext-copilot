@@ -347,9 +347,9 @@ erpnext_ai_bots.ChatWidget = class ChatWidget {
         // as a CSS custom property so every --ai-accent reference updates.
         try {
             const r = await frappe.call({
-                method: "frappe.client.get_value",
-                args: { doctype: "AI Bot Settings", fieldname: "accent_color" },
+                method: "erpnext_ai_bots.api.chat.get_ui_config",
                 async: true,
+                silent: true,
             });
             const color = (r.message && r.message.accent_color) || "#6c5ce7";
             document.documentElement.style.setProperty("--ai-accent", color);
@@ -1944,15 +1944,13 @@ erpnext_ai_bots.ChatWidget = class ChatWidget {
     async _load_elevenlabs_config() {
         try {
             const r = await frappe.call({
-                method: "frappe.client.get_value",
-                args: {
-                    doctype: "AI Bot Settings",
-                    fieldname: ["elevenlabs_api_key", "elevenlabs_voice_id"],
-                },
+                method: "erpnext_ai_bots.api.chat.get_ui_config",
                 async: true,
+                silent: true,
             });
             if (r.message) {
-                this._elevenlabs_key = r.message.elevenlabs_api_key || "";
+                // API key is no longer sent to the browser, so browser-side TTS stays off
+                this._elevenlabs_key = "";
                 this._elevenlabs_voice_id = r.message.elevenlabs_voice_id || "21m00Tcm4TlvDq8ikWAM";
             }
         } catch (e) {
